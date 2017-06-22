@@ -52,20 +52,12 @@ const $ = cheerio.load(input)
 
 // Remove unnecessary HTML elements
 $('link').replaceWith(null)
+$('head > style').replaceWith(null)
 $('script').replaceWith(null)
 $('form').replaceWith(null)
 $('.input').replaceWith(null)
 $('.output_prompt').replaceWith(null)
 $('.anchor-link').replaceWith(null)
-
-// Grab the first <style> block (twitter bootstrap)
-// and remove the "color:#000!important" style clause
-$('head > style').each(function(i, elem) {
-    if (i === 0) {
-        const styleText = $(elem).text()
-        $(elem).text(styleText.replace('color:#000!important', ''))
-    }
-})
 
 // Create Custom style
 const pageBreak = [
@@ -75,10 +67,21 @@ const pageBreak = [
     '  }',
     '}',
 ].join('\n')
+
+// Make sure all borders have single border with 1px
+const tableStyles = [
+    'table {',
+    '  border-collapse: collapse;',
+    '}',
+    'table, th, td {',
+    '  border: 1px solid black;',
+    '}',
+].join('\n')
     
 $([
     '<style type="text/css">',
     pageBreak,
+    tableStyles,
     '</style>'
 ].join('\n')).prependTo('html')
 
